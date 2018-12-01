@@ -45,15 +45,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
   {
    throw new IllegalArgumentException("on createFileIngestModule: IngestModuleIngestJobSettings should be a ObjectDetectionAutopsyIngestModuleIngestJobSettings");
   }
-  try
-  {
-   return new ObjectDetectionFileIngestModule((ObjectDetectionAutopsyIngestModuleIngestJobSettings) ingestOptions);
-  }
-  catch (URISyntaxException ex)
-  {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE,ex.getMessage());
-   return null;
-  }
+  return new ObjectDetectionFileIngestModule((ObjectDetectionAutopsyIngestModuleIngestJobSettings) ingestOptions,null);
  }
 
  @Override
