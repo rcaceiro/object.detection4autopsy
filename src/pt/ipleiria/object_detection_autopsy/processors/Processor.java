@@ -8,4 +8,9 @@ public interface Processor
  public ImageDetection processImage(String path);
  public VideoDetection processVideo(String path);
  public boolean isProcessorAvailable();
+ 
+ public enum Type
+ {
+  Local,Remote;
+ }
 }

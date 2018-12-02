@@ -2,9 +2,11 @@ package pt.ipleiria.object_detection_autopsy.backgroud_services;
 
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettings;
 
-public class ObjectDetectionAutopsyIngestModuleIngestJobSettings implements IngestModuleIngestJobSettings
+public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestModuleIngestJobSettings
 {
- public ObjectDetectionAutopsyIngestModuleIngestJobSettings()
+ 
+ 
+ public ObjectDetectionAutopsyIngestModuleIngestSettings()
  {
   
  }

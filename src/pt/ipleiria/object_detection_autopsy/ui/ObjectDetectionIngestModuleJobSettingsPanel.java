@@ -2,13 +2,13 @@ package pt.ipleiria.object_detection_autopsy.ui;
 
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettings;
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettingsPanel;
-import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestJobSettings;
+import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestSettings;
 
 public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIngestJobSettingsPanel
 {
- private final ObjectDetectionAutopsyIngestModuleIngestJobSettings settings;
+ private final ObjectDetectionAutopsyIngestModuleIngestSettings settings;
  
- public ObjectDetectionIngestModuleJobSettingsPanel(ObjectDetectionAutopsyIngestModuleIngestJobSettings settings)
+ public ObjectDetectionIngestModuleJobSettingsPanel(ObjectDetectionAutopsyIngestModuleIngestSettings settings)
  {
   super();
   this.settings = settings;

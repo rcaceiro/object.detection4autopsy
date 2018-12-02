@@ -4,7 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/backgroud_services/ObjectDetectionAutopsyIngestModuleIngestJobSettings.java</file>
+            <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/processors/Processor.java</file>
             <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/ObjectDetectionIngestModuleFactory.java</file>
+            <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/ui/ObjectDetectionIngestModuleGlobalSettingsPanel.java</file>
+            <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/ui/ObjectDetectionIngestModuleJobSettingsPanel.java</file>
+            <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/processors/SocketIOProcessor.java</file>
             <file>file:/Users/rcaceiro/SynologyDrive/IPLeiria/research_grant/ObjectDetectionAutopsy/src/pt/ipleiria/object_detection_autopsy/backgroud_services/ObjectDetectionFileIngestModule.java</file>
         </group>
     </open-files>

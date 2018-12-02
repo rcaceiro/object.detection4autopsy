@@ -7,10 +7,10 @@ import pt.ipleiria.object_detection_autopsy.processors.Processor;
 
 public class ObjectDetectionFileIngestModule implements FileIngestModule
 {
- private final ObjectDetectionAutopsyIngestModuleIngestJobSettings jobSettings;
+ private final ObjectDetectionAutopsyIngestModuleIngestSettings jobSettings;
  private final Processor processor;
  
- public ObjectDetectionFileIngestModule(ObjectDetectionAutopsyIngestModuleIngestJobSettings ingestOptions, Processor processor)
+ public ObjectDetectionFileIngestModule(ObjectDetectionAutopsyIngestModuleIngestSettings ingestOptions, Processor processor)
  {
   this.jobSettings = ingestOptions;
   this.processor = processor;
