@@ -33,5 +33,4 @@ public class ObjectDetectionFileIngestModule implements FileIngestModule
  {
   
  }
-
 }
