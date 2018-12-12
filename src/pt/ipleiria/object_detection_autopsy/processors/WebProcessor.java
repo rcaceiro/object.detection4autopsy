@@ -3,11 +3,8 @@ package pt.ipleiria.object_detection_autopsy.processors;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
-import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
 import pt.ipleiria.object_detection_autopsy.model.ImageDetection;
 import pt.ipleiria.object_detection_autopsy.model.VideoDetection;
 
