@@ -8,11 +8,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.net.ConnectException;
-import java.net.MalformedURLException;
 import java.text.NumberFormat;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -78,7 +75,7 @@ public class ObjectDetectionIngestModuleGlobalSettingsPanel extends IngestModule
   }
   catch(ConnectException ex)
   {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
+   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage());
    this.labelMessage.setText("Connection isn't established.");
   }
   catch (IOException ex)
