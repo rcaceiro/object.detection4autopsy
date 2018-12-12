@@ -27,7 +27,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  
  public ObjectDetectionIngestModuleFactory()
  {
-  this.settings = null;
+  this.settings = new ObjectDetectionAutopsyIngestModuleIngestSettings();
  }
  
  @Override
@@ -51,12 +51,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public FileIngestModule createFileIngestModule(IngestModuleIngestJobSettings ingestOptions)
  {
-  if (!(ingestOptions instanceof ObjectDetectionAutopsyIngestModuleIngestSettings))
-  {
-   throw new IllegalArgumentException("on createFileIngestModule: IngestModuleIngestJobSettings should be a ObjectDetectionAutopsyIngestModuleIngestsSettings");
-  }
-  
-  return new ObjectDetectionFileIngestModule((ObjectDetectionAutopsyIngestModuleIngestSettings) ingestOptions,null);
+  return new ObjectDetectionFileIngestModule(this.settings,null);
  }
 
  @Override
@@ -80,11 +75,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public IngestModuleIngestJobSettingsPanel getIngestJobSettingsPanel(IngestModuleIngestJobSettings settings)
  {
-  if (!(settings instanceof ObjectDetectionAutopsyIngestModuleIngestSettings))
-  {
-   throw new IllegalArgumentException("on getIngestJobSettingsPanel: IngestModuleIngestJobSettings should be a ObjectDetectionAutopsyIngestModuleIngestSettings");
-  }
-  return new ObjectDetectionIngestModuleJobSettingsPanel((ObjectDetectionAutopsyIngestModuleIngestSettings) settings);
+  return new ObjectDetectionIngestModuleJobSettingsPanel(this.settings);
  }
 
  @Override
@@ -94,12 +85,8 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  }
 
  @Override
- public IngestModuleIngestJobSettings getDefaultIngestJobSettings()
+ public synchronized IngestModuleIngestJobSettings getDefaultIngestJobSettings()
  {
-  if(this.settings == null)
-  {
-   this.settings = new ObjectDetectionAutopsyIngestModuleIngestSettings();
-  }
   return this.settings;
  }
 
