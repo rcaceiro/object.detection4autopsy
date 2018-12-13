@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.text.NumberFormat;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -53,18 +57,52 @@ public class ObjectDetectionIngestModuleGlobalSettingsPanel extends IngestModule
 
  private void checkSettings(ActionEvent e)
  {
-  //TODO async
   JComponent button = null;
   if (e != null && e.getSource() != null && (e.getSource() instanceof JComponent))
   {
    button = (JComponent) e.getSource();
    button.setEnabled(false);
   }
+  this.labelMessage.setText("Testing connection..."); 
+ 
+  final JComponent disabledButton = button;
+  CompletableFuture<Boolean> promise = new CompletableFuture<>();
 
-  Processor temp = this.factory.getProcessor(this.textFieldAddress.getText(), Integer.valueOf(this.formattedTextFieldPort.getText(), 10), true);
-  try
+  Executors.newCachedThreadPool().submit(() ->
   {
-   if (temp.isProcessorAvailable())
+   Processor temp = this.factory.getProcessor(this.textFieldAddress.getText(), Integer.valueOf(this.formattedTextFieldPort.getText(), 10), true);
+   try
+   {
+    promise.complete(temp.isProcessorAvailable());
+   }
+   catch (ConnectException ex)
+   {
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage());
+    promise.completeExceptionally(new ConnectException("Connection isn't established."));
+   }
+   catch (IOException ex)
+   {
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
+    promise.completeExceptionally(new IOException("Error on open connection."));
+   }
+   catch (IllegalAccessException ex)
+   {
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
+    promise.completeExceptionally(new IllegalAccessException("Error getting a proper connection."));
+   }
+   finally
+   {
+    temp.close();
+   }
+  });
+
+  promise.whenComplete((hasConnection, error) ->
+  {
+   if(error != null)
+   {
+    this.labelMessage.setText(error.getLocalizedMessage());
+   }
+   else if (hasConnection)
    {
     this.labelMessage.setText("Connection is established");
    }
@@ -72,28 +110,12 @@ public class ObjectDetectionIngestModuleGlobalSettingsPanel extends IngestModule
    {
     this.labelMessage.setText("Connection isn't established");
    }
-  }
-  catch(ConnectException ex)
-  {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage());
-   this.labelMessage.setText("Connection isn't established.");
-  }
-  catch (IOException ex)
-  {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
-   this.labelMessage.setText("Error on open connection.");
-  }
-  catch (IllegalAccessException ex)
-  {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
-   this.labelMessage.setText("Error getting a proper connection.");
-  }
-
-  if (button != null)
-  {
-   button.setEnabled(true);
-  }
-  temp.close();
+   
+   if(disabledButton != null)
+   {
+    disabledButton.setEnabled(true);
+   }
+  });
  }
 
  private void buildGlobalUI()
