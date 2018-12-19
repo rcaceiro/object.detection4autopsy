@@ -1,7 +1,6 @@
 package pt.ipleiria.object_detection_autopsy;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.lookup.ServiceProvider;
@@ -22,7 +21,7 @@ import pt.ipleiria.object_detection_autopsy.ui.ObjectDetectionIngestModuleJobSet
 public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
 {
  private ObjectDetectionAutopsyIngestModuleIngestSettings settings;
- public static final String ModuleName = "pt.ipleiria.object_detection autopsy";
+ public static final String ModuleName = "pt.ipleiria.object_detection4autopsy";
  public static final Logger ObjectDetectionLogger = Logger.getLogger(ObjectDetectionIngestModuleFactory.ModuleName+".logger");
  
  public ObjectDetectionIngestModuleFactory()

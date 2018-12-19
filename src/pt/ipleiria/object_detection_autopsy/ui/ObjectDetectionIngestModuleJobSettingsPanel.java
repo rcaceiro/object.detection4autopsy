@@ -3,9 +3,8 @@ package pt.ipleiria.object_detection_autopsy.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import javax.swing.DefaultListModel;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -17,10 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.text.JTextComponent;
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettings;
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettingsPanel;
-import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
 import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestSettings;
 import pt.ipleiria.object_detection_autopsy.comparator.StringComparator;
 import pt.ipleiria.object_detection_autopsy.list_model.SortedListModel;
@@ -29,8 +27,8 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
 {
 
  private final ObjectDetectionAutopsyIngestModuleIngestSettings settings;
- JList<String> listAvailableDetections;
- JList<String> listChoosedDetections;
+ private JList<String> listAvailableDetections;
+ private JList<String> listChoosedDetections;
  private final SortedListModel<String> modelAvailableDetections;
  private final SortedListModel<String> modelChoosedDetections;
 
@@ -61,52 +59,43 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
   JPanel panelMedia = new JPanel();
   add(panelMedia, BorderLayout.NORTH);
 
-  JCheckBox checkboxImages = new JCheckBox("Images", this.settings.isImages());
+  JCheckBox checkboxImages = new JCheckBox("Images");
+  checkboxImages.setSelected(this.settings.isImages());
   checkboxImages.setToolTipText("I am to process image files");
-  checkboxImages.addChangeListener(new ChangeListener()
+  checkboxImages.addChangeListener((ChangeEvent e) ->
   {
-   @Override
-   public void stateChanged(ChangeEvent e)
+   if (!(e.getSource() instanceof JToggleButton))
    {
-    if (!(e.getSource() instanceof JToggleButton))
-    {
-     return;
-    }
-    JToggleButton toggleButton = (JToggleButton) e.getSource();
-    settings.setImages(toggleButton.isSelected());
+    return;
    }
+   JToggleButton toggleButton = (JToggleButton) e.getSource();
+   settings.setImages(toggleButton.isSelected());
   });
 
-  JCheckBox checkboxVideos = new JCheckBox("Videos", this.settings.isVideos());
+  JCheckBox checkboxVideos = new JCheckBox("Videos");
+  checkboxVideos.setSelected(this.settings.isVideos());
   checkboxVideos.setToolTipText("I am to process videos files");
-  checkboxVideos.addChangeListener(new ChangeListener()
+  checkboxVideos.addChangeListener((ChangeEvent e) ->
   {
-   @Override
-   public void stateChanged(ChangeEvent e)
+   if (!(e.getSource() instanceof JToggleButton))
    {
-    if (!(e.getSource() instanceof JToggleButton))
-    {
-     return;
-    }
-    JToggleButton toggleButton = (JToggleButton) e.getSource();
-    settings.setVideos(toggleButton.isSelected());
+    return;
    }
+   JToggleButton toggleButton = (JToggleButton) e.getSource();
+   settings.setVideos(toggleButton.isSelected());
   });
 
-  JCheckBox checkBoxRememberSettings = new JCheckBox("Remember Job Settings", this.settings.isRememberJobSettings());
+  JCheckBox checkBoxRememberSettings = new JCheckBox("Remember Job Settings");
+  checkBoxRememberSettings.setSelected(this.settings.isRememberJobSettings());
   checkBoxRememberSettings.setToolTipText("I want that module remember my settings");
-  checkBoxRememberSettings.addChangeListener(new ChangeListener()
+  checkBoxRememberSettings.addChangeListener((ChangeEvent e) ->
   {
-   @Override
-   public void stateChanged(ChangeEvent e)
+   if (!(e.getSource() instanceof JToggleButton))
    {
-    if (!(e.getSource() instanceof JToggleButton))
-    {
-     return;
-    }
-    JToggleButton toggleButton = (JToggleButton) e.getSource();
-    settings.setRememberJobSettings(toggleButton.isSelected());
+    return;
    }
+   JToggleButton toggleButton = (JToggleButton) e.getSource();
+   settings.setRememberJobSettings(toggleButton.isSelected());
   });
 
   GroupLayout gl_panelMedia = new GroupLayout(panelMedia);
@@ -134,75 +123,74 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
   add(panelDetections, BorderLayout.CENTER);
 
   JButton buttonAdd = new JButton("Process >");
-  buttonAdd.addActionListener(new ActionListener()
+  buttonAdd.addActionListener((ActionEvent e) ->
   {
-   @Override
-   public void actionPerformed(ActionEvent e)
+   int index;
+   String key;
+   while ((index = listAvailableDetections.getSelectedIndex()) != -1)
    {
-    int index;
-    String key;
-    while ((index = listAvailableDetections.getSelectedIndex()) != -1)
-    {
-     key = modelAvailableDetections.remove(index);
-     modelChoosedDetections.addElement(key);
-     settings.setValueToKey(key, true);
-    }
+    key = modelAvailableDetections.remove(index);
+    modelChoosedDetections.addElement(key);
+    settings.setValueToKey(key, true);
    }
   });
 
   JButton buttonRemove = new JButton("< Remove");
-  buttonRemove.addActionListener(new ActionListener()
+  buttonRemove.addActionListener((ActionEvent e) ->
   {
-   @Override
-   public void actionPerformed(ActionEvent e)
+   int index;
+   String key;
+   while ((index = listChoosedDetections.getSelectedIndex()) != -1)
    {
-    int index;
-    String key;
-    while ((index = listChoosedDetections.getSelectedIndex()) != -1)
-    {
-     key = modelChoosedDetections.remove(index);
-     modelAvailableDetections.addElement(key);
-     settings.setValueToKey(key, false);
-    }
+    key = modelChoosedDetections.remove(index);
+    modelAvailableDetections.addElement(key);
+    settings.setValueToKey(key, false);
    }
   });
 
   JButton buttonRemoveAll = new JButton("< All");
-  buttonRemoveAll.addActionListener(new ActionListener()
+  buttonRemoveAll.addActionListener((ActionEvent e) ->
   {
-   @Override
-   public void actionPerformed(ActionEvent e)
+   settings.setValueToAllKeys(Boolean.FALSE);
+   while (!modelChoosedDetections.isEmpty())
    {
-    settings.setValueToAllKeys(Boolean.FALSE);
-    while (!modelChoosedDetections.isEmpty())
-    {
-     modelAvailableDetections.addElement(modelChoosedDetections.remove(0));
-    }
+    modelAvailableDetections.addElement(modelChoosedDetections.remove(0));
    }
   });
 
   JButton buttonAddAll = new JButton("All >");
-  buttonAddAll.addActionListener(new ActionListener()
+  buttonAddAll.addActionListener((ActionEvent e) ->
   {
-   @Override
-   public void actionPerformed(ActionEvent e)
+   settings.setValueToAllKeys(Boolean.TRUE);
+   while (!modelAvailableDetections.isEmpty())
    {
-    settings.setValueToAllKeys(Boolean.TRUE);
-    while (!modelAvailableDetections.isEmpty())
-    {
-     modelChoosedDetections.addElement(modelAvailableDetections.remove(0));
-    }
+    modelChoosedDetections.addElement(modelAvailableDetections.remove(0));
    }
   });
 
   JTextField textFieldSearchOnAvailable = new JTextField();
   textFieldSearchOnAvailable.setToolTipText("Search the available detections;");
+  //TODO
+  textFieldSearchOnAvailable.setEnabled(false);
   textFieldSearchOnAvailable.setColumns(10);
+  textFieldSearchOnAvailable.addKeyListener(new KeyAdapter()
+  {
+   @Override
+   public void keyTyped(KeyEvent e)
+   {
+    super.keyTyped(e);
+
+    JTextComponent textComponent = (JTextComponent) e.getSource();
+    listAvailableDetections.updateUI();
+    modelAvailableDetections.setFilter(textComponent.getText());
+   }
+  });
 
   JTextField textFieldSearchOnChoosed = new JTextField();
   textFieldSearchOnChoosed.setToolTipText("Search the choosed detections");
   textFieldSearchOnChoosed.setColumns(10);
-
+//TODO
+  textFieldSearchOnChoosed.setEnabled(false);
   JScrollPane scrollPaneChoosedDetections = new JScrollPane();
 
   JScrollPane scrollPaneAvailableDetections = new JScrollPane();

@@ -1,7 +1,6 @@
 package pt.ipleiria.object_detection_autopsy.backgroud_services;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -35,6 +34,9 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
    this.remote = DefaultSettings.REMOTE;
    this.address = DefaultSettings.ADDRESS;
    this.port = DefaultSettings.PORT;
+   this.images = DefaultSettings.IMAGES;
+   this.videos = DefaultSettings.VIDEOS;
+   this.rememberJobSettings = DefaultSettings.REMEMBER_JOB_SETTINGS;
   }
   else
   {
@@ -75,10 +77,12 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
    if (!ModuleSettings.settingExists(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.REMEMBER_JOB_SETTINGS))
    {
     this.rememberJobSettings = DefaultSettings.REMEMBER_JOB_SETTINGS;
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.INFO, "rememberJobSettings default: {0}", this.rememberJobSettings);
    }
    else
    {
     this.rememberJobSettings = Boolean.parseBoolean(ModuleSettings.getConfigSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.REMEMBER_JOB_SETTINGS));
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.INFO, "rememberJobSettings: {0}", this.rememberJobSettings);
    }
 
    if (!ModuleSettings.settingExists(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.IMAGES))
@@ -447,7 +451,7 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
 
   static final boolean REMOTE = true;
   final static String ADDRESS = "127.0.0.1";
-  final static int PORT = 3000;
+  final static int PORT = 80;
   final static boolean REMEMBER_JOB_SETTINGS = true;
   final static boolean IMAGES = true;
   final static boolean VIDEOS = true;

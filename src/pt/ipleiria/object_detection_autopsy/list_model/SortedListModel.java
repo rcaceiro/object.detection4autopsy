@@ -1,17 +1,24 @@
 package pt.ipleiria.object_detection_autopsy.list_model;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.logging.Level;
 import javax.swing.AbstractListModel;
+import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
+import pt.ipleiria.object_detection_autopsy.comparator.Containable;
 
-public class SortedListModel<T> extends AbstractListModel<T>
+public class SortedListModel<T extends Comparable<T>> extends AbstractListModel<T>
 {
- private final TreeSet<T> modelData;
+ private final TreeMap<T,Boolean> modelData;
+ private final Containable<T> containable;
+ private T filter;
  
- public SortedListModel(Comparator<? super T> comparator)
+ public SortedListModel(Containable<T> containable)
  {
-  this.modelData=new TreeSet<>(comparator);
+  this.filter = null;
+  this.containable=containable;
+  this.modelData=new TreeMap<>(containable);
  }
  
  @Override
@@ -23,29 +30,44 @@ public class SortedListModel<T> extends AbstractListModel<T>
  @Override
  public T getElementAt(int index)
  {
-  Iterator<T> iterator;
+  Iterator<Entry<T,Boolean>> iterator;
   int floatingIndex=this.getSize();
   int multiplier;
-
+  T filter = this.filter;
+  
   if(index<floatingIndex/2)
   {
-   iterator=this.modelData.iterator();
+   iterator=this.modelData.entrySet().parallelStream().filter((t) ->
+   {
+    if(filter == null)
+    {
+     return true;
+    }
+    return this.containable.contains(t.getKey(), filter) && t.getValue();
+   }).iterator();
    floatingIndex=0;
    multiplier=1;
   }
   else
   {
-   iterator=this.modelData.descendingIterator();
+   iterator=this.modelData.descendingMap().entrySet().parallelStream().filter((t) ->
+   {
+    if(filter == null)
+    {
+     return true;
+    }
+    return this.containable.contains(t.getKey(), filter) && t.getValue();
+   }).iterator();
    floatingIndex--;
    multiplier=-1;
   }
   
   while (iterator.hasNext())
   {
-   T element=iterator.next();
+   Entry<T,Boolean> element=iterator.next();
    if(floatingIndex==index)
    {
-    return element;
+    return element.getKey();
    }
    floatingIndex+=multiplier;
   }
@@ -65,7 +87,7 @@ public class SortedListModel<T> extends AbstractListModel<T>
    {
     continue;
    }
-   this.modelData.add(entry);
+   this.modelData.put(entry,Boolean.TRUE);
   }
   this.fireIntervalAdded(this, 0, this.getSize());
  }
@@ -78,13 +100,13 @@ public class SortedListModel<T> extends AbstractListModel<T>
 
   if(index<floatingIndex/2)
   {
-   iterator=this.modelData.iterator();
+   iterator=this.modelData.keySet().iterator();
    floatingIndex=0;
    multiplier=1;
   }
   else
   {
-   iterator=this.modelData.descendingIterator();
+   iterator=this.modelData.descendingKeySet().iterator();
    floatingIndex--;
    multiplier=-1;
   }
@@ -105,8 +127,8 @@ public class SortedListModel<T> extends AbstractListModel<T>
  
  public void addElement(T element)
  {
-  this.modelData.add(element);
-  Iterator<T> iterator = this.modelData.iterator();
+  this.modelData.put(element, Boolean.TRUE);
+  Iterator<T> iterator = this.modelData.keySet().iterator();
   T key;
   int index=0;
   while (iterator.hasNext())
@@ -124,5 +146,28 @@ public class SortedListModel<T> extends AbstractListModel<T>
  public boolean isEmpty()
  {
   return this.modelData.isEmpty();
+ }
+
+ public void setFilter(T filter)
+ {
+  this.filter = filter;
+  int i=0;
+  Iterator<Entry<T,Boolean>> iterator = this.modelData.entrySet().iterator();
+  
+  while(iterator.hasNext())
+  {
+   Entry<T,Boolean> entry = iterator.next();
+   boolean result = this.containable.contains(entry.getKey(), filter);
+   if(result && !entry.getValue())
+   {
+    this.fireIntervalAdded(this, i, i);
+   }
+   else if(!result && entry.getValue())
+   {
+    this.fireIntervalRemoved(this, i, i);
+   }
+   entry.setValue(result);
+   i++;
+  }
  }
 }
