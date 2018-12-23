@@ -1,76 +1,117 @@
 package pt.ipleiria.object_detection_autopsy.processors;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.logging.Level;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
 import pt.ipleiria.object_detection_autopsy.model.ImageDetection;
 import pt.ipleiria.object_detection_autopsy.model.VideoDetection;
 
 public class WebProcessor implements Processor
 {
-
+ private final CloseableHttpClient httpClient;
  private final String address;
  private final int port;
 
  public WebProcessor(String address, int port) throws MalformedURLException
  {
+  this.httpClient = HttpClients.createDefault();
   this.address = address;
   this.port = port;
  }
 
  @Override
- public ImageDetection processImage(String path)
+ public ImageDetection processImage(File file) throws IllegalArgumentException, ClientProtocolException, IOException
  {
-
+  String jsonString;
+  try (CloseableHttpResponse closeableHttpClient = this.sendFile(RequestsPaths.PROCESS_IMAGE, file))
+  {
+   jsonString = this.getJsonString(closeableHttpClient);
+  }
+  ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.INFO, "file {0} detections: {1}", new Object[]
+  {
+   file.getName(), jsonString
+  });
   return null;
  }
 
  @Override
- public VideoDetection processVideo(String path)
+ public VideoDetection processVideo(File file)
  {
   throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
  }
 
  @Override
- public boolean isProcessorAvailable() throws IOException, IllegalAccessException
+ public boolean isProcessorAvailable() throws IllegalArgumentException, ClientProtocolException, IOException
  {
-  HttpURLConnection httpConnection = this.buildHttpRequest("GET", RequestsPaths.PING);
-  httpConnection.connect();
-  int responseCode = httpConnection.getResponseCode();
-  httpConnection.disconnect();
-  return responseCode >=200 && responseCode < 300;
+  HttpUriRequest request = new HttpGet("http://" + this.address + ":" + this.port + RequestsPaths.PING);
+  request.addHeader("Accept", "application/json");
+  CloseableHttpResponse closableHttpResponse = this.httpClient.execute(request);
+  int responseCode = closableHttpResponse.getStatusLine().getStatusCode();
+  return responseCode >= 200 && responseCode < 300;
  }
 
  @Override
  public void close()
  {
+  try
+  {
+   this.httpClient.close();
+  }
+  catch (IOException ex)
+  {
+   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+  }
  }
 
- private HttpURLConnection buildHttpRequest(String method, String endpoint) throws IOException, IllegalAccessException
+ private CloseableHttpResponse sendFile(String endpoint, File file) throws IllegalArgumentException, ClientProtocolException, IOException
  {
-  URL service = new URL("http", this.address, this.port, endpoint);
-  URLConnection connection = service.openConnection();
-  if(!(connection instanceof HttpURLConnection))
+  HttpPost postRequest = new HttpPost("http://" + this.address + ":" + this.port + endpoint);
+  FileBody fileBody = new FileBody(file);
+  
+  MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+  multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+  multipartEntityBuilder.addPart("file", fileBody);
+  HttpEntity entity = multipartEntityBuilder.build();
+
+  postRequest.setEntity(entity);
+  return this.httpClient.execute(postRequest);
+ }
+
+ private String getJsonString(CloseableHttpResponse closeableHttpResponse) throws IOException
+ {
+  if(closeableHttpResponse.getStatusLine().getStatusCode() != 200)
   {
-   throw new IllegalAccessException("URLConnection ins't HttpURLConnection");
+   return null;
   }
-  HttpURLConnection httpConnection = (HttpURLConnection) connection;
-  httpConnection.setRequestMethod(method);
-  httpConnection.setRequestProperty("Accept", "application/json");
-  if(!method.contentEquals("GET"))
+  HttpEntity httpEntity = closeableHttpResponse.getEntity();
+  String response = null;
+  try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream())
   {
-   httpConnection.setDoOutput(true);
+   httpEntity.writeTo(byteArrayOutputStream);
+   response = new String(byteArrayOutputStream.toByteArray(),Charset.forName("UTF-8"));
   }
-  return httpConnection;
+  return response;
  }
  
  private class RequestsPaths
  {
-
   private final static String PING = "/ping";
-  private final static String PROCESS = "/process";
+  private final static String PROCESS_IMAGE = "/process/image";
+  private final static String PROCESS_VIDEO = "/process/video";
  }
-
 }

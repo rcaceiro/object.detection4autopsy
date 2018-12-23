@@ -1,7 +1,6 @@
 Manifest-Version: 1.0
 AutoUpdate-Show-In-Client: true
-OpenIDE-Module: pt.ipleiria.object_detection_autopsy/1
+OpenIDE-Module: pt.ipleiria.object_detection_autopsy
 OpenIDE-Module-Implementation-Version: 1
 OpenIDE-Module-Localizing-Bundle: pt/ipleiria/object_detection_autopsy/Bundle.properties
 OpenIDE-Module-Specification-Version: 1.0.0
-

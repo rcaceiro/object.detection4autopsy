@@ -31,6 +31,8 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
  private JList<String> listChoosedDetections;
  private final SortedListModel<String> modelAvailableDetections;
  private final SortedListModel<String> modelChoosedDetections;
+ private JCheckBox checkboxVideos;
+ private JCheckBox checkboxImages;
 
  public ObjectDetectionIngestModuleJobSettingsPanel(ObjectDetectionAutopsyIngestModuleIngestSettings settings)
  {
@@ -41,6 +43,8 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
   this.modelChoosedDetections = new SortedListModel<>(comparator);
   this.listAvailableDetections = null;
   this.listChoosedDetections = null;
+  this.checkboxImages=null;
+  this.checkboxVideos=null;
   this.modelAvailableDetections.cleanAddAll(this.settings.getAvailableDetections());
   this.modelChoosedDetections.cleanAddAll(this.settings.getChoosedDetections());
   this.buildJobUI();
@@ -59,7 +63,7 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
   JPanel panelMedia = new JPanel();
   add(panelMedia, BorderLayout.NORTH);
 
-  JCheckBox checkboxImages = new JCheckBox("Images");
+  this.checkboxImages = new JCheckBox("Images");
   checkboxImages.setSelected(this.settings.isImages());
   checkboxImages.setToolTipText("I am to process image files");
   checkboxImages.addChangeListener((ChangeEvent e) ->
@@ -72,7 +76,7 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
    settings.setImages(toggleButton.isSelected());
   });
 
-  JCheckBox checkboxVideos = new JCheckBox("Videos");
+  this.checkboxVideos = new JCheckBox("Videos");
   checkboxVideos.setSelected(this.settings.isVideos());
   checkboxVideos.setToolTipText("I am to process videos files");
   checkboxVideos.addChangeListener((ChangeEvent e) ->
@@ -96,6 +100,8 @@ public class ObjectDetectionIngestModuleJobSettingsPanel extends IngestModuleIng
    }
    JToggleButton toggleButton = (JToggleButton) e.getSource();
    settings.setRememberJobSettings(toggleButton.isSelected());
+   this.checkboxImages.setSelected(this.settings.isImages());
+   this.checkboxVideos.setSelected(this.settings.isVideos());
   });
 
   GroupLayout gl_panelMedia = new GroupLayout(panelMedia);

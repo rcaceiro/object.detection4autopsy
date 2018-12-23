@@ -1,5 +1,6 @@
 package pt.ipleiria.object_detection_autopsy.backgroud_services;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,9 +11,9 @@ import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettings;
 import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
 import pt.ipleiria.object_detection_autopsy.comparator.StringComparator;
 
-public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestModuleIngestJobSettings
+public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestModuleIngestJobSettings, Serializable
 {
-
+ private static final long serialVersionUID = 1L;
  private boolean configExists;
  private boolean remote;
  private String address;
@@ -22,12 +23,10 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
  private boolean images;
  private boolean videos;
 
- private TreeMap<String, Boolean> availableDetections;
+ private transient TreeMap<String, Boolean> availableDetections;
 
  public ObjectDetectionAutopsyIngestModuleIngestSettings() throws ExceptionInInitializerError
  {
-  this.availableDetections = new TreeMap<>(new StringComparator());
-  this.globalSettingsHasChanged = false;
   this.configExists = ModuleSettings.configExists(ObjectDetectionIngestModuleFactory.ModuleName);
   if (!configExists)
   {
@@ -77,12 +76,10 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
    if (!ModuleSettings.settingExists(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.REMEMBER_JOB_SETTINGS))
    {
     this.rememberJobSettings = DefaultSettings.REMEMBER_JOB_SETTINGS;
-    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.INFO, "rememberJobSettings default: {0}", this.rememberJobSettings);
    }
    else
    {
     this.rememberJobSettings = Boolean.parseBoolean(ModuleSettings.getConfigSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.REMEMBER_JOB_SETTINGS));
-    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.INFO, "rememberJobSettings: {0}", this.rememberJobSettings);
    }
 
    if (!ModuleSettings.settingExists(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.IMAGES))
@@ -104,6 +101,7 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
    }
   }
 
+  this.availableDetections = new TreeMap<>(new StringComparator());
   this.loadDetectionsSettings();
  }
 
@@ -200,8 +198,8 @@ public class ObjectDetectionAutopsyIngestModuleIngestSettings implements IngestM
   }
   else
   {
-   this.saveSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.IMAGES, Boolean.toString(false));
-   this.saveSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.VIDEOS, Boolean.toString(false));
+   this.saveSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.IMAGES, Boolean.toString(true));
+   this.saveSetting(ObjectDetectionIngestModuleFactory.ModuleName, SettingsString.VIDEOS, Boolean.toString(true));
    this.setValueToAllKeys(true);
   }
  }

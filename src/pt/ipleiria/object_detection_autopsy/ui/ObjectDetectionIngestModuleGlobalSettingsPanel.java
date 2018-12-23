@@ -7,12 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.RoundingMode;
-import java.net.ConnectException;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.RunnableFuture;
 import java.util.logging.Level;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -22,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import org.apache.http.client.ClientProtocolException;
 import org.sleuthkit.autopsy.ingest.IngestModuleGlobalSettingsPanel;
 import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
 import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestSettings;
@@ -75,21 +74,18 @@ public class ObjectDetectionIngestModuleGlobalSettingsPanel extends IngestModule
    {
     promise.complete(temp.isProcessorAvailable());
    }
-   catch (ConnectException ex)
+   catch (IllegalArgumentException ex)   
    {
-    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage());
-    promise.completeExceptionally(new ConnectException("Connection isn't established."));
+   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+   }
+   catch(ClientProtocolException ex)
+   {
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
    }
    catch (IOException ex)
    {
-    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
-    promise.completeExceptionally(new IOException("Error on open connection."));
-   }
-   catch (IllegalAccessException ex)
-   {
-    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getMessage(), ex);
-    promise.completeExceptionally(new IllegalAccessException("Error getting a proper connection."));
-   }
+    ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+   }   
    finally
    {
     temp.close();

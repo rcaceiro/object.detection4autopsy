@@ -20,7 +20,7 @@ import pt.ipleiria.object_detection_autopsy.ui.ObjectDetectionIngestModuleJobSet
 @ServiceProvider(service = IngestModuleFactory.class)
 public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
 {
- private ObjectDetectionAutopsyIngestModuleIngestSettings settings;
+ private final ObjectDetectionAutopsyIngestModuleIngestSettings settings;
  public static final String ModuleName = "pt.ipleiria.object_detection4autopsy";
  public static final Logger ObjectDetectionLogger = Logger.getLogger(ObjectDetectionIngestModuleFactory.ModuleName+".logger");
  
@@ -50,7 +50,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public FileIngestModule createFileIngestModule(IngestModuleIngestJobSettings ingestOptions)
  {
-  return new ObjectDetectionFileIngestModule(this.settings,null);
+  return new ObjectDetectionFileIngestModule(this.settings,this.getProcessor());
  }
 
  @Override
@@ -84,7 +84,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  }
 
  @Override
- public synchronized IngestModuleIngestJobSettings getDefaultIngestJobSettings()
+ public IngestModuleIngestJobSettings getDefaultIngestJobSettings()
  {
   return this.settings;
  }
@@ -92,7 +92,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public IngestModuleGlobalSettingsPanel getGlobalSettingsPanel()
  {
-  return new ObjectDetectionIngestModuleGlobalSettingsPanel(this,(ObjectDetectionAutopsyIngestModuleIngestSettings) this.getDefaultIngestJobSettings());
+  return new ObjectDetectionIngestModuleGlobalSettingsPanel(this,this.settings);
  }
 
  @Override
@@ -111,7 +111,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
    }
    catch (MalformedURLException ex)
    {
-    ObjectDetectionLogger.log(Level.SEVERE,ex.getMessage(),ex);
+    ObjectDetectionLogger.log(Level.SEVERE,ex.getLocalizedMessage(),ex);
    }
   }
   return null;
