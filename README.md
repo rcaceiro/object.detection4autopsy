@@ -1,0 +1,2 @@
+# Object Detection for Autopsy
+This module is developed in [Java](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html), allow to use a state-of-the-art, real-time object detection system called [Yolo](https://pjreddie.com/darknet/yolo/) on open-source forensics software called [Autopsy](https://www.autopsy.com).

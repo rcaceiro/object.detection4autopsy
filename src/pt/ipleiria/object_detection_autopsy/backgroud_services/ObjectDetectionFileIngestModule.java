@@ -1,10 +1,8 @@
 package pt.ipleiria.object_detection_autopsy.backgroud_services;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.http.client.ClientProtocolException;
 import org.sleuthkit.autopsy.ingest.FileIngestModule;
 import org.sleuthkit.autopsy.ingest.IngestJobContext;
@@ -83,7 +81,7 @@ public class ObjectDetectionFileIngestModule implements FileIngestModule
  {
   try
   {
-   VideoDetection videoDetection = this.processor.processVideo(file);
+   VideoDetection[] videoDetection = this.processor.processVideo(file);
    return ProcessResult.OK;
   }
   catch (IllegalArgumentException ex)
