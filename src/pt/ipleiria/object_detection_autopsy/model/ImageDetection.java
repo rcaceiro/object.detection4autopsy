@@ -20,4 +20,14 @@ public class ImageDetection
   this.timeSpentForClassification = timeSpentForClassification;
   this.detections = detections;
  }
+
+ public double getTimeSpentForClassification()
+ {
+  return timeSpentForClassification;
+ }
+
+ public Detection[] getDetections()
+ {
+  return detections;
+ }
 }

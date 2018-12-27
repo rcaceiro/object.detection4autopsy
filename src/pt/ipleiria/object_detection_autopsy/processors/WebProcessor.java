@@ -77,6 +77,10 @@ public class WebProcessor implements Processor
    jsonString = this.getJsonString(closeableHttpClient);
   }
   
+  if(jsonString == null)
+  {
+   return null;
+  }
   return this.gson.fromJson(jsonString, ImageDetection.class);
  }
 
@@ -89,6 +93,10 @@ public class WebProcessor implements Processor
    jsonString = this.getJsonString(closeableHttpClient);
   }
   
+  if(jsonString == null)
+  {
+   return null;
+  }
   return this.gson.fromJson(jsonString, VideoDetection[].class);
  }
 
