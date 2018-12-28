@@ -3,7 +3,6 @@ package pt.ipleiria.object_detection_autopsy.backgroud_services;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
-import org.apache.http.client.ClientProtocolException;
 import org.sleuthkit.autopsy.casemodule.services.Blackboard;
 import org.sleuthkit.autopsy.casemodule.Case;
 import org.sleuthkit.autopsy.ingest.FileIngestModule;
@@ -70,13 +69,13 @@ public class ObjectDetectionFileIngestModule implements FileIngestModule
    BlackboardArtifact artifact = this.createArtifact(af);
    if (imageDetection == null)
    {
-    this.publishAttribute(artifact, "no objects found");
+    this.publishMainAttribute(artifact, "no objects found");
     this.indexArtifact(artifact);
     return ProcessResult.OK;
    }
    for (Detection detection : imageDetection.getDetections())
    {
-    this.publishAttribute(artifact, detection.getClassName());
+    this.publishMainAttribute(artifact, detection.getClassName());
    }
    this.indexArtifact(artifact);
    return ProcessResult.OK;
@@ -96,15 +95,21 @@ public class ObjectDetectionFileIngestModule implements FileIngestModule
    BlackboardArtifact artifact = this.createArtifact(af);
    if (videoDetections == null || videoDetections.length == 0)
    {
-    this.publishAttribute(artifact, "no objects found");
+    this.publishMainAttribute(artifact, "no objects found");
     this.indexArtifact(artifact);
     return ProcessResult.OK;
    }
    for (VideoDetection videoDetection : videoDetections)
    {
+    if(videoDetection.getDetections() == null || videoDetection.getDetections().length == 0)
+    {
+     this.publishMainAttribute(artifact, "no objects found");
+     this.publishSecundaryAttribute(artifact, String.valueOf(videoDetection.getMillisecond())+" ms");
+    }
     for (Detection detection : videoDetection.getDetections())
     {
-     this.publishAttribute(artifact, detection.getClassName());
+     this.publishMainAttribute(artifact, detection.getClassName());
+     this.publishSecundaryAttribute(artifact, String.valueOf(videoDetection.getMillisecond())+" ms");
     }
    }
    this.indexArtifact(artifact);
@@ -122,7 +127,13 @@ public class ObjectDetectionFileIngestModule implements FileIngestModule
   return file.newArtifact(BlackboardArtifact.ARTIFACT_TYPE.TSK_INTERESTING_FILE_HIT);
  }
  
- private void publishAttribute(BlackboardArtifact artifact,String attributeTitle) throws TskCoreException
+ private void publishSecundaryAttribute(BlackboardArtifact artifact,String attributeText) throws TskCoreException
+ {
+  BlackboardAttribute blackboardAttribute = new BlackboardAttribute(BlackboardAttribute.ATTRIBUTE_TYPE.TSK_COMMENT, ObjectDetectionIngestModuleFactory.ModuleName, attributeText);
+  artifact.addAttribute(blackboardAttribute);
+ }
+ 
+ private void publishMainAttribute(BlackboardArtifact artifact,String attributeTitle) throws TskCoreException
  {
   BlackboardAttribute blackboardAttribute = new BlackboardAttribute(BlackboardAttribute.ATTRIBUTE_TYPE.TSK_SET_NAME, ObjectDetectionIngestModuleFactory.ModuleName, attributeTitle);
   artifact.addAttribute(blackboardAttribute);

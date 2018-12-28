@@ -51,6 +51,10 @@
             </module-dependencies>
             <public-packages/>
             <class-path-extension>
+                <runtime-relative-path>ext/j2html-1.3.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/j2html-1.3.0.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/jna-4.4.0.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jna-4.4.0.jar</binary-origin>
             </class-path-extension>
@@ -69,6 +73,10 @@
             <class-path-extension>
                 <runtime-relative-path>ext/commons-logging-1.2.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/commons-logging-1.2.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/poi-bin-4.0.1-20181203.zip</runtime-relative-path>
+                <binary-origin>release/modules/ext/poi-bin-4.0.1-20181203.zip</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/commons-codec-1.10.jar</runtime-relative-path>
