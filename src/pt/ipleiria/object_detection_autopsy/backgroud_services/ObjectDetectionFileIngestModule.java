@@ -1,39 +1,147 @@
 package pt.ipleiria.object_detection_autopsy.backgroud_services;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import java.net.URISyntaxException;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import org.sleuthkit.autopsy.casemodule.services.Blackboard;
+import org.sleuthkit.autopsy.casemodule.Case;
 import org.sleuthkit.autopsy.ingest.FileIngestModule;
 import org.sleuthkit.autopsy.ingest.IngestJobContext;
+import org.sleuthkit.autopsy.ingest.IngestServices;
+import org.sleuthkit.autopsy.ingest.ModuleDataEvent;
 import org.sleuthkit.datamodel.AbstractFile;
+import org.sleuthkit.datamodel.BlackboardArtifact;
+import org.sleuthkit.datamodel.BlackboardAttribute;
+import org.sleuthkit.datamodel.TskCoreException;
+import pt.ipleiria.object_detection_autopsy.ObjectDetectionIngestModuleFactory;
+import pt.ipleiria.object_detection_autopsy.model.Detection;
+import pt.ipleiria.object_detection_autopsy.model.ImageDetection;
+import pt.ipleiria.object_detection_autopsy.model.VideoDetection;
+import pt.ipleiria.object_detection_autopsy.processors.Processor;
 
 public class ObjectDetectionFileIngestModule implements FileIngestModule
 {
- private ObjectDetectionAutopsyIngestModuleIngestJobSettings jobSettings;
- private Socket socketIO;
- 
- public ObjectDetectionFileIngestModule(ObjectDetectionAutopsyIngestModuleIngestJobSettings ingestOptions) throws URISyntaxException
+ private final ObjectDetectionAutopsyIngestModuleIngestSettings jobSettings;
+ private final Processor processor;
+ private final Blackboard blackboard;
+
+ public ObjectDetectionFileIngestModule(ObjectDetectionAutopsyIngestModuleIngestSettings ingestOptions, Processor processor)
  {
   this.jobSettings = ingestOptions;
-  socketIO = IO.socket("http://localhost");
+  this.processor = processor;
+  this.blackboard = Case.getCurrentCase().getServices().getBlackboard();
  }
- 
+
  @Override
  public ProcessResult process(AbstractFile af)
  {
+  if (af.getLocalAbsPath() == null)
+  {
+   return ProcessResult.OK;
+  }
+  File autopsyFile = new File(af.getLocalAbsPath());
+  if (this.jobSettings.isImages() && this.processor.isImageFile(autopsyFile))
+  {
+   return this.processImage(autopsyFile, af);
+  }
+  if (this.jobSettings.isVideos() && this.processor.isVideoFile(autopsyFile))
+  {
+   return this.processVideo(autopsyFile,af);
+  }
   return ProcessResult.OK;
  }
 
  @Override
  public void shutDown()
  {
-  
  }
 
  @Override
  public void startUp(IngestJobContext ijc) throws IngestModuleException
  {
-  
  }
 
+ private ProcessResult processImage(File file, AbstractFile af)
+ {
+  try
+  {
+   ImageDetection imageDetection = this.processor.processImage(file);
+   BlackboardArtifact artifact = this.createArtifact(af);
+   if (imageDetection == null)
+   {
+    this.publishMainAttribute(artifact, "no objects found");
+    this.indexArtifact(artifact);
+    return ProcessResult.OK;
+   }
+   for (Detection detection : imageDetection.getDetections())
+   {
+    this.publishMainAttribute(artifact, detection.getClassName());
+   }
+   this.indexArtifact(artifact);
+   return ProcessResult.OK;
+  }
+  catch (IllegalArgumentException | IOException | TskCoreException | Blackboard.BlackboardException ex)
+  {
+   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+   return ProcessResult.ERROR;
+  }
+ }
+
+ private ProcessResult processVideo(File file, AbstractFile af)
+ {
+  try
+  {
+   VideoDetection[] videoDetections = this.processor.processVideo(file);
+   BlackboardArtifact artifact = this.createArtifact(af);
+   if (videoDetections == null || videoDetections.length == 0)
+   {
+    this.publishMainAttribute(artifact, "no objects found");
+    this.indexArtifact(artifact);
+    return ProcessResult.OK;
+   }
+   for (VideoDetection videoDetection : videoDetections)
+   {
+    if(videoDetection.getDetections() == null || videoDetection.getDetections().length == 0)
+    {
+     this.publishMainAttribute(artifact, "no objects found");
+     this.publishSecundaryAttribute(artifact, String.valueOf(videoDetection.getMillisecond())+" ms");
+    }
+    for (Detection detection : videoDetection.getDetections())
+    {
+     this.publishMainAttribute(artifact, detection.getClassName());
+     this.publishSecundaryAttribute(artifact, String.valueOf(videoDetection.getMillisecond())+" ms");
+    }
+   }
+   this.indexArtifact(artifact);
+   return ProcessResult.OK;
+  }  
+  catch (IllegalArgumentException | IOException | TskCoreException | Blackboard.BlackboardException ex)
+  {
+   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE, ex.getLocalizedMessage(), ex);
+   return ProcessResult.ERROR;
+  }
+ }
+ 
+ private BlackboardArtifact createArtifact(AbstractFile file) throws TskCoreException
+ {
+  return file.newArtifact(BlackboardArtifact.ARTIFACT_TYPE.TSK_INTERESTING_FILE_HIT);
+ }
+ 
+ private void publishSecundaryAttribute(BlackboardArtifact artifact,String attributeText) throws TskCoreException
+ {
+  BlackboardAttribute blackboardAttribute = new BlackboardAttribute(BlackboardAttribute.ATTRIBUTE_TYPE.TSK_COMMENT, ObjectDetectionIngestModuleFactory.ModuleName, attributeText);
+  artifact.addAttribute(blackboardAttribute);
+ }
+ 
+ private void publishMainAttribute(BlackboardArtifact artifact,String attributeTitle) throws TskCoreException
+ {
+  BlackboardAttribute blackboardAttribute = new BlackboardAttribute(BlackboardAttribute.ATTRIBUTE_TYPE.TSK_SET_NAME, ObjectDetectionIngestModuleFactory.ModuleName, attributeTitle);
+  artifact.addAttribute(blackboardAttribute);
+ }
+ 
+ private void indexArtifact(BlackboardArtifact artifact) throws TskCoreException, Blackboard.BlackboardException
+ {
+   blackboard.indexArtifact(artifact);
+   IngestServices.getInstance().fireModuleDataEvent(new ModuleDataEvent(ObjectDetectionIngestModuleFactory.ModuleName, BlackboardArtifact.ARTIFACT_TYPE.TSK_INTERESTING_FILE_HIT));
+ }
 }

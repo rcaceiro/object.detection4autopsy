@@ -1,6 +1,6 @@
 package pt.ipleiria.object_detection_autopsy;
 
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.lookup.ServiceProvider;
@@ -10,15 +10,24 @@ import org.sleuthkit.autopsy.ingest.IngestModuleFactory;
 import org.sleuthkit.autopsy.ingest.IngestModuleGlobalSettingsPanel;
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettings;
 import org.sleuthkit.autopsy.ingest.IngestModuleIngestJobSettingsPanel;
-import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestJobSettings;
+import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionAutopsyIngestModuleIngestSettings;
 import pt.ipleiria.object_detection_autopsy.backgroud_services.ObjectDetectionFileIngestModule;
+import pt.ipleiria.object_detection_autopsy.processors.Processor;
+import pt.ipleiria.object_detection_autopsy.processors.WebProcessor;
 import pt.ipleiria.object_detection_autopsy.ui.ObjectDetectionIngestModuleGlobalSettingsPanel;
 import pt.ipleiria.object_detection_autopsy.ui.ObjectDetectionIngestModuleJobSettingsPanel;
 
 @ServiceProvider(service = IngestModuleFactory.class)
 public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
 {
- public static final Logger ObjectDetectionLogger = Logger.getLogger("ObjectDetectionforAutopsyLogger");
+ private final ObjectDetectionAutopsyIngestModuleIngestSettings settings;
+ public static final String ModuleName = "pt.ipleiria.object_detection4autopsy";
+ public static final Logger ObjectDetectionLogger = Logger.getLogger(ObjectDetectionIngestModuleFactory.ModuleName+".logger");
+ 
+ public ObjectDetectionIngestModuleFactory()
+ {
+  this.settings = new ObjectDetectionAutopsyIngestModuleIngestSettings();
+ }
  
  @Override
  public String getModuleVersionNumber()
@@ -41,19 +50,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public FileIngestModule createFileIngestModule(IngestModuleIngestJobSettings ingestOptions)
  {
-  if (!(ingestOptions instanceof ObjectDetectionAutopsyIngestModuleIngestJobSettings))
-  {
-   throw new IllegalArgumentException("on createFileIngestModule: IngestModuleIngestJobSettings should be a ObjectDetectionAutopsyIngestModuleIngestJobSettings");
-  }
-  try
-  {
-   return new ObjectDetectionFileIngestModule((ObjectDetectionAutopsyIngestModuleIngestJobSettings) ingestOptions);
-  }
-  catch (URISyntaxException ex)
-  {
-   ObjectDetectionIngestModuleFactory.ObjectDetectionLogger.log(Level.SEVERE,ex.getMessage());
-   return null;
-  }
+  return new ObjectDetectionFileIngestModule(this.settings,this.getProcessor());
  }
 
  @Override
@@ -77,11 +74,7 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public IngestModuleIngestJobSettingsPanel getIngestJobSettingsPanel(IngestModuleIngestJobSettings settings)
  {
-  if (!(settings instanceof ObjectDetectionAutopsyIngestModuleIngestJobSettings))
-  {
-   throw new IllegalArgumentException("on getIngestJobSettingsPanel: IngestModuleIngestJobSettings should be a ObjectDetectionAutopsyIngestModuleIngestJobSettings");
-  }
-  return new ObjectDetectionIngestModuleJobSettingsPanel((ObjectDetectionAutopsyIngestModuleIngestJobSettings) settings);
+  return new ObjectDetectionIngestModuleJobSettingsPanel(this.settings);
  }
 
  @Override
@@ -93,18 +86,44 @@ public class ObjectDetectionIngestModuleFactory implements IngestModuleFactory
  @Override
  public IngestModuleIngestJobSettings getDefaultIngestJobSettings()
  {
-  return new ObjectDetectionAutopsyIngestModuleIngestJobSettings();
+  return this.settings;
  }
 
  @Override
  public IngestModuleGlobalSettingsPanel getGlobalSettingsPanel()
  {
-  return new ObjectDetectionIngestModuleGlobalSettingsPanel();
+  return new ObjectDetectionIngestModuleGlobalSettingsPanel(this,this.settings);
  }
 
  @Override
  public boolean hasGlobalSettingsPanel()
  {
   return true;
+ }
+ 
+ public Processor getProcessor(String address, int port, boolean remote)
+ {
+  if(remote)
+  {
+   try
+   {
+    return new WebProcessor(address,port);
+   }
+   catch (MalformedURLException ex)
+   {
+    ObjectDetectionLogger.log(Level.SEVERE,ex.getLocalizedMessage(),ex);
+   }
+  }
+  return null;
+ }
+ 
+ public Processor getProcessor()
+ {
+  if(!(this.getDefaultIngestJobSettings() instanceof ObjectDetectionAutopsyIngestModuleIngestSettings))
+  {
+   return null;
+  }
+  ObjectDetectionAutopsyIngestModuleIngestSettings localSettings=(ObjectDetectionAutopsyIngestModuleIngestSettings) this.getDefaultIngestJobSettings();
+  return this.getProcessor(localSettings.getAddress(), localSettings.getPort(), localSettings.isRemote());
  }
 }
