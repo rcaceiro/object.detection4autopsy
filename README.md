@@ -34,7 +34,7 @@ This mode only has on component that is this module, and allow to the user take 
 - Autopsy 4.7.0 or newer
 - Windows, Linux or macOS
 
-## Instalation
+## Installation
 - Download the lastest [release](https://github.com/rcaceiro/obejct.detection4autopsy/releases) nbm file.
 - Click Tools
  ![Main page](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/1.PNG?raw=true)
