@@ -37,23 +37,23 @@ This mode only has on component that is this module, and allow to the user take 
 ## Instalation
 - Download the lastest [release](https://github.com/rcaceiro/obejct.detection4autopsy/releases) nbm file.
 - Click Tools
- ![Main page](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/1.PNG?raw=true)
+ ![Main page](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/1.PNG?raw=true)
 - Click Plugins
- ![After tools clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/2.png?raw=true)
+ ![After tools clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/2.png?raw=true)
 - Click Downloaded tab and then Add Plugins button
- ![After plugins clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/3.png?raw=true)
+ ![After plugins clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/3.png?raw=true)
 - Find the file and then click open
- ![After add plugins clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/4.png?raw=true)
+ ![After add plugins clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/4.png?raw=true)
 - Click Install
- ![After open clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/5.png?raw=true)
+ ![After open clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/5.png?raw=true)
 - Click Next
- ![After install clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/6.png?raw=true)
+ ![After install clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/6.png?raw=true)
 - Accept the terms and then Next
- ![After next clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/7.png?raw=true)
+ ![After next clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/7.png?raw=true)
 - Click Continue
- ![After continue clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/8.png?raw=true)
+ ![After continue clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/8.png?raw=true)
 - Click Close
- ![After continue clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/v1.0.0/installation_tuturial/9.png?raw=true)
+ ![After continue clicked](https://github.com/rcaceiro/obejct.detection4autopsy/blob/master/installation_tuturial/9.png?raw=true)
 - **Will prompt that module signature isn't trustable, we try fix this problem**
 - And now you can run the ingest modules has usual
 - **After this if you want to use remote you must have to [install the server](https://github.com/rcaceiro/object.detection4autopsy.server#installation) and run it**
