@@ -30,6 +30,10 @@ This mode only has on component that is this module, and allow to the user take 
 - You have to invest in a better machine, a common worksation, with 2 or 4 cores and no nVidia GPU, cannot extract the results as fast as you want.
 - You may notice that your machine became slow and a little unresponsive while run the insgest module
 
+## Minimum Requirements
+- Autopsy 4.7.0 or newer
+- Windows, Linux or macOS
+
 ## Instalation
 - Download the lastest [release](https://github.com/rcaceiro/obejct.detection4autopsy/releases) nbm file.
 - Click Tools
