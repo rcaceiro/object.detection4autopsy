@@ -1,18 +1,19 @@
 # Object Detection for Autopsy
 This module is developed in [Java](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html), allow to use a state-of-the-art, real-time object detection system called [Yolo](https://pjreddie.com/darknet/yolo/) on open-source forensics software called [Autopsy](https://www.autopsy.com).
-This module is a FileIngestModule, in the future will bring a ReportModule too.
+<br>This module is a FileIngestModule, in the future will bring a ReportModule too.
+
 It is sponsored by [Instituto de Telecomunicações](https://www.it.pt) developed by [Rúben Caceiro](https://github.com/rcaceiro) and guided by [Patrício Domingues](https://scholar.google.com/citations?user=LPwSQ2EAAAAJ&hl=en).
 
 ## Mode of operation
 ### Remote mode
 This mode has two components:
-1) [object.detection4autopsy.server](https://github.com/rcaceiro/object.detection4autopsy.server), the [installation process](https://github.com/rcaceiro/object.detection4autopsy.server#installation) is discribed on repository.
+1) [object.detection4autopsy.server](https://github.com/rcaceiro/object.detection4autopsy.server), the [installation process](https://github.com/rcaceiro/object.detection4autopsy.server#installation) is described on repository.
 2) [object.detection4autopsy](https://github.com/rcaceiro/obejct.detection4autopsy), the installation process is described [below](https://github.com/rcaceiro/object.detection4autopsy#installation)
 
 **Pros:**
 - Allow to invest on a powerfull machine and share between several users, insteaded invest in several machines less powerfull.
 - Allow to not block the computer to another tasks, because this process requires a lot resources and can leave the machine less usable.
-- You can use this mode to simulate the local mode you must have to install the server on you machine and configure the module to connect to 127.0.0.1 or localhost and the behaviour is local. **(If you want use this locally must use this setup for now)**
+- You can use this mode to simulate the local mode you have to install the server on you machine and configure the module to connect to 127.0.0.1 or localhost and the behaviour is local. **(If you want use this locally must use this setup for now)**
 
 **Cons:**
 - This mode of operation can be a bottle neck, because if a task took to long to finish the rest will be delayed.
