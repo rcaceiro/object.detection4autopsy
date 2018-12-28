@@ -8,7 +8,7 @@ It is sponsored by [Instituto de Telecomunicações](https://www.it.pt) develope
 ### Remote mode
 This mode has two components:
 1) [object.detection4autopsy.server](https://github.com/rcaceiro/object.detection4autopsy.server), the [installation process](https://github.com/rcaceiro/object.detection4autopsy.server#installation) is described on repository.
-2) [object.detection4autopsy](https://github.com/rcaceiro/obejct.detection4autopsy), the installation process is described [below](https://github.com/rcaceiro/object.detection4autopsy#installation)
+2) [object.detection4autopsy](https://github.com/rcaceiro/obejct.detection4autopsy), the installation process is described [below](https://github.com/rcaceiro/obejct.detection4autopsy#installation)
 
 **Pros:**
 - Allow to invest on a powerfull machine and share between several users, insteaded invest in several machines less powerfull.
